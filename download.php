@@ -4,7 +4,7 @@ set_time_limit(0);
 // DOMDocument throws alot of Notices and Warning because it don't knows HTML5 really good...
 error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 
-include $_SERVER['DOCUMENT_ROOT'].'/ref/ref.php';
+// include $_SERVER['DOCUMENT_ROOT'].'/ref/ref.php'; - local dev script..
 
 function curl_url_get_contents($url) {
     $ch = curl_init();
