@@ -78,6 +78,7 @@ for ($i = 1; $i <= $last_page; $i++) {
     foreach ($urls as $key => $value) {
         if (preg_match('/upload/', $value)) {
             $the_posted_image = $value; // thats the image i've searched for .... i hope
+            break; // cause we will only the first image .. maybe there is an ad after the image..
         }
     }
 
