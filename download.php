@@ -4,19 +4,22 @@ set_time_limit(0);
 // DOMDocument throws alot of Notices and Warning because it don't knows HTML5 really good...
 error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 
-// include $_SERVER['DOCUMENT_ROOT'].'/ref/ref.php'; - local dev script..
-
 function curl_url_get_contents($url) {
     $ch = curl_init();
     $options = array(
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_URL            => $url,
+        CURLOPT_HEADER         => true,
     );
     curl_setopt_array($ch, $options);
     $html = curl_exec($ch);
-    curl_close($ch);
 
+    if ($html === false) {
+        echo 'ERROR: '.curl_error($ch)."\n";
+    }
+
+    curl_close($ch);
     return $html;
 }
 
@@ -30,7 +33,7 @@ function get_last_page() {
     // get href of anchor that has the class "last" 
     $finder    = new DomXPath($dom);
     $classname = "last";
-    $nodes = $finder->query("//*[contains(@class, '$classname')]");
+    $nodes     = $finder->query("//*[contains(@class, '$classname')]");
 
     $last_url = $nodes->item(0)->getAttribute('href');
     if (is_numeric(basename($last_url))) {
@@ -44,7 +47,10 @@ echo "\n$last_page images found...\n";
 
 // check there is an dir to save to
 if (!is_dir('images')) {
-    mkdir('./images/');
+    $dir = mkdir('./images/');
+    if ($dir === false) {
+        exit('Error: You need to set the permission correctly!.');
+    }
 }
 
 for ($i = 1; $i <= $last_page; $i++) { 
