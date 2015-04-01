@@ -82,7 +82,7 @@ for ($i = 1; $i <= $last_page; $i++) {
 
     // filter the main url...
     foreach ($urls as $key => $value) {
-        if (preg_match('/upload/', $value)) {
+        if (preg_match('/\/uploads\/.+\.jpg$/', $value)) {
             $the_posted_image = $value; // thats the image i've searched for .... i hope
         }
     }
