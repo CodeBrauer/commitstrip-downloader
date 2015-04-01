@@ -58,7 +58,7 @@ function get_last_page() {
 
 // start the script!
 $last_page = get_last_page();
-echo "\n$last_page images found..." . PHP_EOL;
+echo PHP_EOL . "$last_page images found..." . PHP_EOL;
 
 // check there is an dir to save to
 if (!is_dir($path_for_images)) {
