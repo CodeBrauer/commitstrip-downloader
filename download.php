@@ -10,7 +10,7 @@ function curl_url_get_contents($url) {
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_URL            => $url,
-        CURLOPT_HEADER         => true,
+        CURLOPT_HEADER         => false,
     );
     curl_setopt_array($ch, $options);
     $html = curl_exec($ch);
