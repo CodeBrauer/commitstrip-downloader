@@ -1,16 +1,21 @@
 <?php
+include '../ref/ref.php';
 /* -- CONFIGURATION -----------------------------------*/
 
 // MUST have a trailing slash! - also will try to create the dir if not existing (recursive, can be relative)
 $path_for_images = './images/';
 
+// set your timezone
+$my_timezone = 'Europe/Berlin'; # http://php.net/manual/en/timezones.php
 
-// everything below is the script. you can edit it of cause ...
-// ... but maybe you will break it. Or improve it! - make a pull request! :)
+/**
+ * everything below is the script. you can edit it of cause ...
+ * ... but maybe you will break it. Or improve it! - make a pull request! :)
+ */
 
 /* -- some settings for running in cli mode. -----------------------------------*/
 set_time_limit(0);
-date_default_timezone_set('Europe/Berlin');
+date_default_timezone_set($my_timezone);
 $script_start = microtime(true);
 
 // DOMDocument throws alot of Notices and Warning because it don't knows HTML5 really good...
@@ -37,7 +42,25 @@ function curl_url_get_contents($url) {
 }
 
 function get_last_page() {
-    $url = "http://www.commitstrip.com/en/page/2/";
+    $dom = new DOMDocument();
+    // load html page
+    $dom->loadHTML(curl_url_get_contents("http://www.commitstrip.com/en/archive/"));
+    $dom->preserveWhiteSpace = false;
+    
+    // get href of anchor that has the class "last" 
+    $finder    = new DomXPath($dom);
+    $classname = "cat-item-1";
+    $nodes     = $finder->query("//*[contains(@class, '$classname')]");
+
+    if (!empty($nodes)) {
+        $count = $nodes->item(0)->nodeValue;
+        preg_match('!\d+!', $count, $match);
+        return $match[0];
+    }
+    return false;
+}
+
+function get_next_post_url($url) {
     $dom = new DOMDocument();
     // load html page
     $dom->loadHTML(curl_url_get_contents($url));
@@ -45,21 +68,17 @@ function get_last_page() {
     
     // get href of anchor that has the class "last" 
     $finder    = new DomXPath($dom);
-    $classname = "last";
-    $nodes     = $finder->query("//*[contains(@class, '$classname')]");
+    $classname = "nav-next";
+    $nodes     = $finder->query("//*[contains(@class, '$classname')]/a");
 
-    $last_url = $nodes->item(0)->getAttribute('href');
-    if (is_numeric(basename($last_url))) {
-        return (int)basename($last_url);
+    if (!empty($nodes)) {
+        return $nodes->item(0)->getAttribute('href');
     }
     return false;
 }
 /* -- functions end. -----------------------------------*/
 
 // start the script!
-$last_page = get_last_page();
-echo PHP_EOL . "$last_page images found..." . PHP_EOL;
-
 // check there is an dir to save to
 if (!is_dir($path_for_images)) {
     $dir = mkdir($path_for_images, 0777, true);
@@ -68,13 +87,15 @@ if (!is_dir($path_for_images)) {
     }
 }
 
-// for each page ..
-for ($i = 1; $i <= $last_page; $i++) {
+$url       = "";
+$i         = 0;
+$last_page = get_last_page();
+// loop!
+for (;;) {
 
-    if ($i == 1) { // page one is special
-        $url = "http://www.commitstrip.com/en/";
-    } else {
-        $url = "http://www.commitstrip.com/en/page/$i/";    
+    $url = (empty($url)) ? "http://www.commitstrip.com/en/2012/02/22/interview/" : get_next_post_url($url);
+    if (empty($url)) {
+        break;
     }
 
     // download website to string
@@ -107,6 +128,7 @@ for ($i = 1; $i <= $last_page; $i++) {
         echo "($i/$last_page) No image found..." . PHP_EOL;
         continue;
     }
+    $i++;
 
     // now create a good filename...
     $url_parts = explode('/', $the_posted_image);
