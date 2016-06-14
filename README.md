@@ -19,7 +19,7 @@ download the script, make sure the dir and the script have write access. run it 
 - be sure you're in the directory
 - run this commands:
  - `chmod a+x download.php && chmod 777 .`
- - `php download.php`
+ - `php download.php` or just `./download.php`
 
 ## screenshot
 
