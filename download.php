@@ -43,23 +43,38 @@ function curl_url_get_contents($url) {
     return $html;
 }
 
-function get_last_page() {
+function get_item_count() {
+    global $language;
     $dom = new DOMDocument();
     // load html page
-    $dom->loadHTML(curl_url_get_contents("http://www.commitstrip.com/".$language."/archive/"));
+    $dom->loadHTML(curl_url_get_contents("http://www.commitstrip.com/".$language."/"));
     $dom->preserveWhiteSpace = false;
     
     // get href of anchor that has the class "last" 
     $finder    = new DomXPath($dom);
-    $classname = "cat-item-1";
-    $nodes     = $finder->query("//*[contains(@class, '$classname')]");
+    $classname = "last";
+    $nodes     = $finder->query("//a[contains(@class, '$classname')]");
 
     if (!empty($nodes)) {
-        $count = $nodes->item(0)->nodeValue;
-        preg_match('!\d+!', $count, $match);
-        return $match[0];
+        // get the last page number
+        $lastpage = basename(rtrim($nodes->item(0)->getAttribute('href'), '/'));
+        
+        // download last page
+        $domx = new DOMDocument();
+        $domx->loadHTML(curl_url_get_contents($nodes->item(0)->getAttribute('href')));
+        $domx->preserveWhiteSpace = false;
+
+        // find the count of comics on this page
+        $finder    = new DomXPath($domx);
+        $nodes     = $finder->query("//section");
+        
+        // 20 comics per page + the count of comic on last page
+        $items = (20 * $lastpage) + $nodes->length;
+        return $items;
+        
     }
     return false;
+
 }
 
 function get_next_post_url($url) {
@@ -95,7 +110,7 @@ if($language != 'fr' && $language != 'en')
 
 $url       = "";
 $i         = 0;
-$last_page = get_last_page();
+$last_item = get_item_count();
 // loop!
 for (;;) {
 
@@ -131,7 +146,7 @@ for (;;) {
     }
 
     if ($the_posted_image === FALSE) {
-        echo "($i/$last_page) No image found..." . PHP_EOL;
+        echo "($i/$last_item) No image found..." . PHP_EOL;
         continue;
     }
     $i++;
@@ -145,7 +160,7 @@ for (;;) {
 
     // check file exists already
     if (file_exists($path_for_images.$filename)) {
-        echo "($i/$last_page) File skipped: $the_posted_image" . PHP_EOL;
+        echo "($i/$last_item) File skipped: $the_posted_image" . PHP_EOL;
         continue;
     }
     
@@ -154,9 +169,9 @@ for (;;) {
 
     // I hope it does not fail - Why should it fail at all?!
     if ($res !== FALSE) {
-        echo "($i/$last_page) Downloaded: $the_posted_image" . PHP_EOL;
+        echo "($i/$last_item) Downloaded: $the_posted_image" . PHP_EOL;
     } else {
-        echo "($i/$last_page) Failed downloading: $the_posted_image" . PHP_EOL; 
+        echo "($i/$last_item) Failed downloading: $the_posted_image" . PHP_EOL; 
     }
 }
 
