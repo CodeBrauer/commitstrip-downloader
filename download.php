@@ -1,5 +1,4 @@
 <?php
-include '../ref/ref.php';
 /* -- CONFIGURATION -----------------------------------*/
 
 // MUST have a trailing slash! - also will try to create the dir if not existing (recursive, can be relative)
@@ -7,6 +6,9 @@ $path_for_images = './images/';
 
 // set your timezone
 $my_timezone = 'Europe/Berlin'; # http://php.net/manual/en/timezones.php
+
+//Set the language to download comics
+$language = 'en'; //Can only be «fr» or «en»
 
 /**
  * everything below is the script. you can edit it of cause ...
@@ -44,7 +46,7 @@ function curl_url_get_contents($url) {
 function get_last_page() {
     $dom = new DOMDocument();
     // load html page
-    $dom->loadHTML(curl_url_get_contents("http://www.commitstrip.com/en/archive/"));
+    $dom->loadHTML(curl_url_get_contents("http://www.commitstrip.com/".$language."/archive/"));
     $dom->preserveWhiteSpace = false;
     
     // get href of anchor that has the class "last" 
@@ -71,7 +73,7 @@ function get_next_post_url($url) {
     $classname = "nav-next";
     $nodes     = $finder->query("//*[contains(@class, '$classname')]/a");
 
-    if (!empty($nodes)) {
+    if (!empty($nodes) && !is_null($nodes->item(0))) {
         return $nodes->item(0)->getAttribute('href');
     }
     return false;
@@ -87,13 +89,17 @@ if (!is_dir($path_for_images)) {
     }
 }
 
+//Check language
+if($language != 'fr' && $language != 'en')
+    exit('Error: language can only be FR or EN');
+
 $url       = "";
 $i         = 0;
 $last_page = get_last_page();
 // loop!
 for (;;) {
 
-    $url = (empty($url)) ? "http://www.commitstrip.com/en/2012/02/22/interview/" : get_next_post_url($url);
+    $url = (empty($url)) ? "http://www.commitstrip.com/".$language."/2012/02/22/interview/" : get_next_post_url($url);
     if (empty($url)) {
         break;
     }
