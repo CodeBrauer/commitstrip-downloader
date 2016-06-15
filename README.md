@@ -21,8 +21,8 @@ download the script, make sure the dir and the script have write access. run it 
  - `chmod a+x download.php && chmod 777 .`
  - `php download.php` or just `./download.php`
 
-## screenshot
-
-![screenshot](http://i.imgur.com/prCDpOY.png)
-
 Files that already exists, are getting skipped.
+
+## demo
+
+[![asciicast](https://asciinema.org/a/4hc16mzsbwgvziz4irczjni9j.png)](https://asciinema.org/a/4hc16mzsbwgvziz4irczjni9j)
