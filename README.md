@@ -1,28 +1,27 @@
 commitstrip_downloader
 ======================
 
-a simple script that downloads all comics from commitstrip.com
+A simple script that downloads all comics from commitstrip.com
 
-download the script, make sure the dir and the script have write access. run it in your terminal.
+## Requirements
 
-## requirements
-
-- linux/mac-os host
+- Linux/OSX host
 - php5
 - php5 curl
-- enviroment language should be utf8, cause special french chars...
+- Environment language should be utf8 to handle French characters
 
 
-## running
+## Running the script
 
-- navigate to the directory
-- be sure you're in the directory
-- run this commands:
- - `chmod a+x download.php && chmod 777 .`
+ - Clone the repository
+ - Navigate to the cloned repository directory
+ - `chmod u+x download.php`
  - `php download.php` or just `./download.php`
 
-Files that already exists, are getting skipped.
+#### Notes
+If a comic has been previously downloaded to the current directory, it will be skipped on future commitstrip_downloader runs.
 
-## demo
+## Demo
 
 [![asciicast](https://asciinema.org/a/4hc16mzsbwgvziz4irczjni9j.png)](https://asciinema.org/a/4hc16mzsbwgvziz4irczjni9j)
+Thanks to [asciicast](https://asciinema.org/)
