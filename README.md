@@ -5,9 +5,9 @@ A simple script that downloads all comics from commitstrip.com
 
 ## Requirements
 
-- Linux/OSX host
-- php5
-- php5 curl
+- Linux/OSX host (windows untested)
+- php5.4 or newer
+- curl extension
 - Environment language should be utf8 to handle French characters
 
 
