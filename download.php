@@ -6,7 +6,7 @@
 $path_for_images = './images/';
 
 // set your timezone
-$my_timezone = 'Europe/Berlin'; # http://php.net/manual/en/timezones.php
+$my_timezone = 'Europe/Berlin'; # https://php.net/timezones
 
 //Set the language to download comics
 $language = 'en'; //Can only be «fr» or «en»
@@ -32,6 +32,7 @@ function curl_url_get_contents($url) {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_URL            => $url,
         CURLOPT_HEADER         => false,
+        CURLOPT_FOLLOWLOCATION => true,
     );
     curl_setopt_array($ch, $options);
     $html = curl_exec($ch);
@@ -48,7 +49,7 @@ function get_item_count() {
     global $language;
     $dom = new DOMDocument();
     // load html page
-    $dom->loadHTML(curl_url_get_contents("http://www.commitstrip.com/".$language."/"));
+    $dom->loadHTML(curl_url_get_contents("https://www.commitstrip.com/".$language."/"));
     $dom->preserveWhiteSpace = false;
     
     // get href of anchor that has the class "last" 
@@ -115,7 +116,7 @@ $last_item = get_item_count();
 // loop!
 for (;;) {
 
-    $url = (empty($url)) ? "http://www.commitstrip.com/".$language."/2012/02/22/interview/" : get_next_post_url($url);
+    $url = (empty($url)) ? "https://www.commitstrip.com/".$language."/2012/02/22/interview/" : get_next_post_url($url);
     if (empty($url)) {
         break;
     }
